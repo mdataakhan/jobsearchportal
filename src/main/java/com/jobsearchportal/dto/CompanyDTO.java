@@ -3,16 +3,9 @@ package com.jobsearchportal.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class CompanyDTO {
 
     private String id;
@@ -37,4 +30,75 @@ public class CompanyDTO {
     private String description;
 
     private List<String> jobIds = new ArrayList<>();
+
+    // Constructors
+    public CompanyDTO() {
+    }
+
+    public CompanyDTO(String id, String name, String email, String password, String location, String description, List<String> jobIds) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.location = location;
+        this.description = description;
+        this.jobIds = jobIds;
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<String> getJobIds() {
+        return jobIds;
+    }
+
+    public void setJobIds(List<String> jobIds) {
+        this.jobIds = jobIds;
+    }
 }

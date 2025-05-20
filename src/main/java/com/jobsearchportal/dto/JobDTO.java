@@ -3,16 +3,9 @@ package com.jobsearchportal.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class JobDTO {
 
     private String id;
@@ -42,4 +35,84 @@ public class JobDTO {
     @NotBlank(message = "Job type is required")
     @Size(max = 50, message = "Job type must be less than 50 characters")
     private String jobType;
+
+    // Constructors
+    public JobDTO() {
+    }
+
+    public JobDTO(String id, String position, String companyId, String location, String experience, String description, List<String> skills, String jobType) {
+        this.id = id;
+        this.position = position;
+        this.companyId = companyId;
+        this.location = location;
+        this.experience = experience;
+        this.description = description;
+        this.skills = skills;
+        this.jobType = jobType;
+    }
+
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getExperience() {
+        return experience;
+    }
+
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
+
+    public String getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(String jobType) {
+        this.jobType = jobType;
+    }
 }
