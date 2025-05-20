@@ -106,7 +106,8 @@ public class CompanyController {
                         company.getId(),
                         company.getName(),
                         company.getEmail(),
-                        null, // Exclude password
+//                        null, // Exclude password
+                        company.getPassword(),
                         company.getLocation(),
                         company.getDescription(),
                         company.getJobIds()
