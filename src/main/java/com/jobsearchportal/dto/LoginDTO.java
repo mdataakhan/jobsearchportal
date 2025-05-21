@@ -3,21 +3,7 @@ package com.jobsearchportal.dto;
 public class LoginDTO {
     private String email;
     private String password;
-    private String role; // "company" or "candidate"
-
-    public LoginDTO(String email, String password, String role) {
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    private String role;
 
     public String getEmail() {
         return email;
@@ -35,4 +21,11 @@ public class LoginDTO {
         this.password = password;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

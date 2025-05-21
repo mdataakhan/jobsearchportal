@@ -1,56 +1,106 @@
 package com.jobsearchportal.controller;
 
+import com.jobsearchportal.config.JwtUtil;
 import com.jobsearchportal.dto.LoginDTO;
-import com.jobsearchportal.entity.Candidate;
-import com.jobsearchportal.entity.Company;
-import com.jobsearchportal.service.CandidateService;
-import com.jobsearchportal.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class AuthController {
 
     @Autowired
-    private CandidateService candidateService;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    private CompanyService companyService;
+    private JwtUtil jwtUtil;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private com.jobsearchportal.service.CandidateService candidateService;
 
+    @Autowired
+    private com.jobsearchportal.service.CompanyService companyService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
-        String role = loginDTO.getRole();
+        try {
+            // Validate role
+            System.out.println(loginDTO+"your payloadrecieved at server side");
+            System.out.println(loginDTO.getEmail());
+            System.out.println(loginDTO.getPassword());
+            System.out.println(loginDTO.getRole().toLowerCase());
+            String role = loginDTO.getRole().toLowerCase();
+            if (!"candidate".equals(role) && !"company".equals(role)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginResponse("Invalid role"));
+            }
 
-        if ("candidate".equalsIgnoreCase(role)) {
-            Optional<Candidate> candidateOpt = candidateService.findCandidateByEmail(loginDTO.getEmail());
-            if (candidateOpt.isPresent()) {
-                Candidate candidate = candidateOpt.get();
-                if (passwordEncoder.matches(loginDTO.getPassword(), candidate.getPassword())) {
-                    return ResponseEntity.ok(candidate);
-                }
+            // Authenticate user
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword())
+            );
+
+            // Get user details
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            // Generate JWT
+            String jwt = jwtUtil.generateToken(userDetails.getUsername(), role);
+
+            // Prepare response
+            if ("candidate".equals(role)) {
+                return candidateService.findCandidateByEmail(loginDTO.getEmail())
+                        .map(candidate -> ResponseEntity.ok(new LoginResponse(jwt, candidate, role)))
+                        .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid credentials")));
+            } else {
+                return companyService.findCompanyByEmail(loginDTO.getEmail())
+                        .map(company -> ResponseEntity.ok(new LoginResponse(jwt, company, role)))
+                        .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid credentials")));
             }
-        } else if ("company".equalsIgnoreCase(role)) {
-            Optional<Company> companyOpt = companyService.findCompanyByEmail(loginDTO.getEmail());
-            if (companyOpt.isPresent()) {
-                Company company = companyOpt.get();
-                if (passwordEncoder.matches(loginDTO.getPassword(), company.getPassword())) {
-                    return ResponseEntity.ok(company);
-                }
-            }
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid credentials"));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+    }
+
+    // Inner class for login response
+    public static class LoginResponse {
+        private String token;
+        private Object user;
+        private String role;
+        private String errorMessage;
+
+        public LoginResponse(String token, Object user, String role) {
+            this.token = token;
+            this.user = user;
+            this.role = role;
+        }
+
+        public LoginResponse(String errorMessage) {
+            this.errorMessage = errorMessage;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public Object getUser() {
+            return user;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
     }
 }
