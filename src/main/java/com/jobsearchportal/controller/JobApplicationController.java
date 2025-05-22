@@ -40,24 +40,11 @@ public class JobApplicationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobApplicationDTO> updateJobApplication(@PathVariable String id, @RequestBody JobApplicationDTO jobApplicationDTO) {
-        JobApplication jobApplication = new JobApplication(
-                jobApplicationDTO.getCandidateId(),
-                jobApplicationDTO.getJobId(),
-                jobApplicationDTO.getQualification(),
-                jobApplicationDTO.getResumeLink(),
-                jobApplicationDTO.getStatus()
-        );
-        JobApplication updatedJobApplication = jobApplicationService.updateJobApplication(id, jobApplication);
-        JobApplicationDTO updatedDTO = new JobApplicationDTO(
-                updatedJobApplication.getId(),
-                updatedJobApplication.getCandidateId(),
-                updatedJobApplication.getJobId(),
-                updatedJobApplication.getQualification(),
-                updatedJobApplication.getResumeLink(),
-                updatedJobApplication.getStatus()
-        );
-        return new ResponseEntity<>(updatedDTO, HttpStatus.OK);
+    public ResponseEntity<JobApplication> updateJobStatus(@PathVariable String id, @RequestParam String status) {
+
+        JobApplication updatedJobApplication = jobApplicationService.updateJobStatus(id, status);
+
+        return new ResponseEntity<>(updatedJobApplication, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

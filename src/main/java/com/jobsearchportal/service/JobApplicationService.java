@@ -46,33 +46,12 @@ public class JobApplicationService {
         return jobApplicationRepository.save(jobApplication);
     }
 
-    public JobApplication updateJobApplication(String id, JobApplication updatedJobApplication) {
-        // Validate entity
-        Set<ConstraintViolation<JobApplication>> violations = validator.validate(updatedJobApplication);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
+    public JobApplication updateJobStatus(String id, String status) {
 
-        // Find existing job application
         JobApplication jobApplication = jobApplicationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("JobApplication not found with id: " + id));
 
-        // Validate candidateId and jobId
-        if (!jobApplication.getCandidateId().equals(updatedJobApplication.getCandidateId())) {
-            candidateRepository.findById(updatedJobApplication.getCandidateId())
-                    .orElseThrow(() -> new IllegalArgumentException("Candidate not found with id: " + updatedJobApplication.getCandidateId()));
-        }
-        if (!jobApplication.getJobId().equals(updatedJobApplication.getJobId())) {
-            jobRepository.findById(updatedJobApplication.getJobId())
-                    .orElseThrow(() -> new IllegalArgumentException("Job not found with id: " + updatedJobApplication.getJobId()));
-        }
-
-        // Update fields
-        jobApplication.setCandidateId(updatedJobApplication.getCandidateId());
-        jobApplication.setJobId(updatedJobApplication.getJobId());
-        jobApplication.setQualification(updatedJobApplication.getQualification());
-        jobApplication.setResumeLink(updatedJobApplication.getResumeLink());
-        jobApplication.setStatus(updatedJobApplication.getStatus());
+        jobApplication.setStatus(status);
         jobApplication.onUpdate();
 
         return jobApplicationRepository.save(jobApplication);
