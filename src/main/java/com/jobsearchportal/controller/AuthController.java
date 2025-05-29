@@ -2,6 +2,9 @@ package com.jobsearchportal.controller;
 
 import com.jobsearchportal.config.JwtUtil;
 import com.jobsearchportal.dto.LoginDTO;
+import com.jobsearchportal.service.AdminService;
+import com.jobsearchportal.service.CandidateService;
+import com.jobsearchportal.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api")
 public class AuthController {
@@ -26,21 +31,20 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private com.jobsearchportal.service.CandidateService candidateService;
+    private CandidateService candidateService;
 
     @Autowired
-    private com.jobsearchportal.service.CompanyService companyService;
+    private CompanyService companyService;
+
+    @Autowired
+    private AdminService adminService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
         try {
             // Validate role
-            System.out.println(loginDTO+"your payloadrecieved at server side");
-            System.out.println(loginDTO.getEmail());
-            System.out.println(loginDTO.getPassword());
-            System.out.println(loginDTO.getRole().toLowerCase());
             String role = loginDTO.getRole().toLowerCase();
-            if (!"candidate".equals(role) && !"company".equals(role)) {
+            if (!"candidate".equals(role) && !"company".equals(role) && !"admin".equals(role)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginResponse("Invalid role"));
             }
 
@@ -55,8 +59,12 @@ public class AuthController {
             // Generate JWT
             String jwt = jwtUtil.generateToken(userDetails.getUsername(), role);
 
-            // Prepare response
-            if ("candidate".equals(role)) {
+            // Prepare response based on role
+            if ("admin".equals(role)) {
+                return adminService.findAdminByEmail(loginDTO.getEmail())
+                        .map(admin -> ResponseEntity.ok(new LoginResponse(jwt, admin, role)))
+                        .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid credentials")));
+            } else if ("candidate".equals(role)) {
                 return candidateService.findCandidateByEmail(loginDTO.getEmail())
                         .map(candidate -> ResponseEntity.ok(new LoginResponse(jwt, candidate, role)))
                         .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid credentials")));

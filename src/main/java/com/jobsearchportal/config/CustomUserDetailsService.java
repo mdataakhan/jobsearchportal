@@ -1,7 +1,9 @@
 package com.jobsearchportal.config;
 
+import com.jobsearchportal.entity.Admin;
 import com.jobsearchportal.entity.Candidate;
 import com.jobsearchportal.entity.Company;
+import com.jobsearchportal.service.AdminService;
 import com.jobsearchportal.service.CandidateService;
 import com.jobsearchportal.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +25,21 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private CompanyService companyService;
 
+    @Autowired
+    private AdminService adminService;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // Try to find an Admin
+        Optional<Admin> adminOpt = adminService.findAdminByEmail(email);
+        if (adminOpt.isPresent()) {
+            Admin admin = adminOpt.get();
+            return User.withUsername(admin.getEmail())
+                    .password(admin.getPassword())
+                    .authorities("ROLE_ADMIN")
+                    .build();
+        }
+
         // Try to find a Candidate
         Optional<Candidate> candidateOpt = candidateService.findCandidateByEmail(email);
         if (candidateOpt.isPresent()) {

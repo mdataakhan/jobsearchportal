@@ -99,6 +99,7 @@ public class JobService {
     public List<Job> findJobsByCompanyId(String companyId) {
         return jobRepository.findByCompanyId(companyId);
     }
+    public List<Job> findJobsByLocation(String location) {return jobRepository.findByLocation(location);}
 
     public List<Job> findJobsByPosition(String position) {
         return jobRepository.findByPositionContainingIgnoreCase(position);
