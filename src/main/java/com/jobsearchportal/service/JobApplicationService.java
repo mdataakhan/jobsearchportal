@@ -73,6 +73,10 @@ public class JobApplicationService {
         return jobApplicationRepository.findByCandidateId(candidateId);
     }
 
+    public List<JobApplication> findAllJobApplications() {
+        return jobApplicationRepository.findAll();
+    }
+
     public List<JobApplication> findJobApplicationsByJobId(String jobId) {
         return jobApplicationRepository.findByJobId(jobId);
     }

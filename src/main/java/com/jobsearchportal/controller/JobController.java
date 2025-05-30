@@ -140,4 +140,23 @@ public class JobController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(jobDTOs, HttpStatus.OK);
     }
+
+    @GetMapping
+    public ResponseEntity<List<JobDTO>> findAllJobs() {
+        List<JobDTO> jobDTOs = jobService.findAllJobs().stream()
+                .map(job -> new JobDTO(
+                        job.getId(),
+                        job.getPosition(),
+                        job.getCompanyId(),
+                        job.getLocation(),
+                        job.getExperience(),
+                        job.getDescription(),
+                        job.getSkills(),
+                        job.getJobType()
+                ))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(jobDTOs, HttpStatus.OK);
+    }
+
 }

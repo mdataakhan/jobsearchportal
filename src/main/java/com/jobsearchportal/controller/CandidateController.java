@@ -116,4 +116,21 @@ public class CandidateController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(candidateDTOs, HttpStatus.OK);
     }
+
+    @GetMapping
+    public ResponseEntity<List<CandidateDTO>> findAllCandidates() {
+        List<CandidateDTO> candidateDTOs = candidateService.findAllCandidates().stream()
+                .map(candidate -> new CandidateDTO(
+                        candidate.getId(),
+                        candidate.getName(),
+                        candidate.getEmail(),
+                        candidate.getPassword(), // You may choose to exclude password here for security
+                        candidate.getPhone(),
+                        candidate.getResumeLink(),
+                        candidate.getSkills()
+                ))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(candidateDTOs, HttpStatus.OK);
+    }
 }

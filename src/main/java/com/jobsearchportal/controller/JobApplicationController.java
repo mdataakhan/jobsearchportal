@@ -96,6 +96,22 @@ public class JobApplicationController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(jobApplicationDTOs, HttpStatus.OK);
     }
+    @GetMapping
+    public ResponseEntity<List<JobApplicationDTO>> findAllJobApplications() {
+        List<JobApplicationDTO> dtos = jobApplicationService.findAllJobApplications()
+                .stream()
+                .map(app -> new JobApplicationDTO(
+                        app.getId(),
+                        app.getCandidateId(),
+                        app.getJobId(),
+                        app.getQualification(),
+                        app.getResumeLink(),
+                        app.getStatus()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
 
     @GetMapping("/status/{status}")
     public ResponseEntity<List<JobApplicationDTO>> getJobApplicationsByStatus(@PathVariable String status) {

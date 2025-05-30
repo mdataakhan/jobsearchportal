@@ -104,6 +104,9 @@ public class JobService {
     public List<Job> findJobsByPosition(String position) {
         return jobRepository.findByPositionContainingIgnoreCase(position);
     }
+    public List<Job> findAllJobs() {
+        return jobRepository.findAll();
+    }
 
     public List<Job> findJobsBySkill(String skill) {
         return jobRepository.findBySkillsContaining(skill);

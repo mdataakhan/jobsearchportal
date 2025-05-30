@@ -91,6 +91,9 @@ public class CandidateService {
     public Optional<Candidate> findCandidateByEmail(String email) {
         return candidateRepository.findByEmail(email);
     }
+    public List<Candidate> findAllCandidates() {
+        return candidateRepository.findAll();
+    }
 
     public List<Candidate> findCandidatesBySkill(String skill) {
         return candidateRepository.findBySkillsContaining(skill);
